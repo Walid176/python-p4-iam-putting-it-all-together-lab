@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 from flask import request, session
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
@@ -52,6 +51,7 @@ class Signup(Resource):
             db.session.rollback()
             return {'error': str(e)}, 422
 
+
 class CheckSession(Resource):
     def get(self):
         user_id = session.get('user_id')
@@ -68,6 +68,7 @@ class CheckSession(Resource):
                 }, 200
         
         return {'error': 'Unauthorized'}, 401
+
 
 class Login(Resource):
     def post(self):
@@ -92,6 +93,7 @@ class Login(Resource):
             }, 200
         
         return {'error': 'Unauthorized'}, 401
+
 
 class Logout(Resource):
     def delete(self):
@@ -154,7 +156,7 @@ class RecipeIndex(Resource):
             db.session.commit()
             
             # Get the user for nested response
-            user = User.query.get(user_id)
+            user = db.session.get(User, user_id)
             
             # Return recipe data with nested user
             return {
@@ -187,7 +189,6 @@ api.add_resource(CheckSession, '/check_session', endpoint='check_session')
 api.add_resource(Login, '/login', endpoint='login')
 api.add_resource(Logout, '/logout', endpoint='logout')
 api.add_resource(RecipeIndex, '/recipes', endpoint='recipes')
-
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
